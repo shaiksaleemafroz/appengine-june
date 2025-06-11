@@ -27,27 +27,30 @@ pipeline {
             }
         }
 
-        stage('Deploy to Google App Engine') {
-            steps {
-                script {
-                    sh '''
-                    set -e
-                    gcloud --version
-                    pwd
-                    ls -l
+stage('Deploy to Google App Engine') {
+    steps {
+        withCredentials([file(credentialsId: 'gcp-service-account', variable: 'GCP_KEY')]) {
+            script {
+                sh '''
+                set -e
+                gcloud --version
+                pwd
+                ls -l
 
-                    # Write GCP key file from Jenkins credentials
-                    echo "$GOOGLE_APPLICATION_CREDENTIALS" > gcp-key.json
-                    gcloud auth activate-service-account --key-file=gcp-key.json
+                # Activate service account
+                gcloud auth activate-service-account --key-file=$GCP_KEY
 
-                    gcloud config set project $PROJECT_ID
+                # Set project
+                gcloud config set project $PROJECT_ID
 
-                    gcloud app deploy app.yaml --quiet
-                    '''
-                }
+                # Deploy
+                gcloud app deploy app.yaml --quiet
+                '''
             }
         }
     }
+}
+
 
     post {
         always {
