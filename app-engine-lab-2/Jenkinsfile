@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        PROJECT_ID = 'my-first-devops-project-444911'
+        PROJECT_ID = 'my-bigquery-project-434'
     }
 
     stages {
